@@ -1,0 +1,70 @@
+
+.masthead {
+    background: linear-gradient(45deg, #2C2C2C 0%, #494544 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2) inset, 0 -3px 7px rgba(0, 0, 0, 0.2) inset;
+    color: #FFFFFF;
+    padding: 40px 0;
+    position: relative;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 0, 0, 0.075);
+}
+
+.masthead * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Masthead (docs home)
+------------------------- */
+.masthead {
+    padding: 70px 0 80px;
+    margin-bottom: 0;
+    color: #fff;
+}
+.masthead h1 {
+    font-size: 120px;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+.masthead p {
+    font-size: 40px;
+    font-weight: 200;
+    line-height: 1.25;
+}
+
+/* Textual links in masthead */
+.masthead-links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.masthead-links li {
+    display: inline;
+    padding: 0 10px;
+    color: rgba(255,255,255,.25);
+}
+
+/* Subhead (other pages)
+------------------------- */
+.subhead {
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    padding: 40px 0;
+    margin-bottom: 10px;
+}
+.subhead h1 {
+    font-size: 60px;
+}
+.subhead p {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 30px;
+    margin-bottom: 20px;
+}
+.subhead .navbar {
+    display: none;
+}
+
+/* 自定义部分
+-------------*/
+.m-l-20{ margin-left: 20px;}
