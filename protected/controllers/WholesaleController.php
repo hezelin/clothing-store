@@ -9,43 +9,6 @@ class WholesaleController extends Controller
 	public $layout='/layouts/main';
 
 	/**
-	 * @return array action filters
-	 */
-	/*public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
-		);
-	}*/
-
-	/**
-	 * Specifies the access control rules.
-	 * This method is used by the 'accessControl' filter.
-	 * @return array access control rules
-	 */
-	/*public function accessRules()
-	{
-		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
-			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-	}*/
-
-	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
@@ -54,6 +17,7 @@ class WholesaleController extends Controller
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 		));
+
 	}
 
 	/**
@@ -63,6 +27,14 @@ class WholesaleController extends Controller
 	public function actionCreate()
 	{
 		$model=new TblWholesale;
+        $productData = Yii::app()->db->createCommand()
+            ->select('product_id,name')
+            ->from('tbl_product')
+            ->queryAll();
+        $product = array();
+        foreach($productData as $row){
+            $product[$row['product_id']] = $row['name'];
+        }
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -76,6 +48,7 @@ class WholesaleController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+            'product'=>$product,
 		));
 	}
 
@@ -157,6 +130,36 @@ class WholesaleController extends Controller
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
+
+
+    public function actionTypeahead()
+    {
+        echo json_encode(
+            array(
+                '动漫美女(dongmanmeinv)|1',
+                '百度谷歌(baidugoogle)|1',
+                '聚美优品(jumeiyoupin)|2',
+                '京东商城(jingdongshangcheng)|2',
+                '唯品会vip(weipinhuivip)|1',
+                '苏宁云商(suningyunshang)|2',
+                '阿里巴巴(alibaba)|1'
+            ),JSON_UNESCAPED_UNICODE);
+    }
+
+    public function actionItem($id)
+    {
+        $itemData = Yii::app()->db->createCommand()
+            ->select('item_id,color')
+            ->from('tbl_product_item')
+            ->where('product_id=:product_id and number>0 and enable="Y"',array(':product_id'=>$id))
+            ->group('color')
+            ->queryAll();
+        $item = array('0'=>'选择颜色');
+        foreach($itemData as $row){
+            $item[$row['item_id']] = $row['color'];
+        }
+        echo json_encode($item,JSON_UNESCAPED_UNICODE);
+    }
 
 	/**
 	 * Performs the AJAX validation.

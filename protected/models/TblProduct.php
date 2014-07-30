@@ -100,6 +100,9 @@ class TblProduct extends CActiveRecord
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+            'sort'=>array(
+                'defaultOrder'=>'update_time DESC',
+            ),
 		));
 	}
 

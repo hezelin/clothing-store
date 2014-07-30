@@ -11,11 +11,13 @@
 
     echo $form->dropDownListGroup($model,'factory_id', array(
             'wrapperHtmlOptions' => array(
-                'class' => 'col-sm-5',
+                'class' => 'col-sm-7',
             ),
             'widgetOptions' => array(
                 'data' => $factory,
-            )
+            ),
+            'append' => '<a href="/factory/create">+添加</a>'
+//            'append' => '<button class="btn btn-default btn-xs" type="button">Go!</button>'
     ));
 
     echo $form->textFieldGroup($model, 'name',array(

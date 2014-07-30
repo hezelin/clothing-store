@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is the model class for table "tbl_wholesale".
+ * This is the model class for table "tbl_sell".
  *
- * The followings are the available columns in table 'tbl_wholesale':
+ * The followings are the available columns in table 'tbl_sell':
  * @property string $id
  * @property string $item_id
  * @property integer $number
@@ -12,14 +12,14 @@
  * @property string $enable
  * @property string $sell_type
  */
-class TblWholesale extends CActiveRecord
+class TblSell extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'tbl_wholesale';
+		return 'tbl_sell';
 	}
 
 	/**
@@ -62,12 +62,11 @@ class TblWholesale extends CActiveRecord
 			'id' => '自增',
 			'item_id' => '产品id',
 //			'number' => '数量',
-//			'sell' => '销售价格',
             'number' => '技能',
-            'sell' => '战斗力',
+			'sell' => '销售价格',
 			'create_time' => '创建时间',
 			'enable' => 'Enable',
-			'sell_type' => '批发or零售',
+			'sell_type' => '销售方式',
 		);
 	}
 
@@ -106,7 +105,7 @@ class TblWholesale extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return TblWholesale the static model class
+	 * @return TblSell the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

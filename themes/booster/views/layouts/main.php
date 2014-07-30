@@ -48,7 +48,9 @@ $this->widget(
 	<div class="clear"></div>
 
 	<div class="container" id="footer">
-		Copyright &copy; <?php echo date('Y'); ?> by Hellen.<br/>
+        <br/>
+        <p></p>
+		Copyright &copy; <?php echo date('Y'); ?> by Harry.<br/>
 		联系：QQ 730107711
 	</div><!-- footer -->
 
