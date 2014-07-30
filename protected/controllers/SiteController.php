@@ -2,9 +2,39 @@
 
 class SiteController extends Controller
 {
-	/**
-	 * Declares class-based actions.
-	 */
+    /**
+     * @return array action filters
+     */
+    /*public function filters()
+    {
+        return array(
+            'accessControl', // perform access control for CRUD operations
+//            'postOnly + delete', // we only allow deletion via POST request
+        );
+    }
+
+
+    public function accessRules()
+    {
+        return array(
+            array('allow',  // allow all users to perform 'index' and 'view' actions
+                'actions'=>array('index','login','view','page','captcha','error'),
+                'users'=>array('*'),
+            ),
+            array('allow', // allow authenticated user to perform 'create' and 'update' actions
+                'actions'=>array('create','update','contact'),
+                'users'=>array('@'),
+            ),
+            array('allow', // allow admin user to perform 'admin' and 'delete' actions
+                'actions'=>array('admin','delete'),
+                'roles'=>array('admin'),
+            ),
+            array('deny',  // deny all users
+                'users'=>array('*'),
+            ),
+        );
+    }*/
+
 	public function actions()
 	{
 		return array(
@@ -37,6 +67,7 @@ class SiteController extends Controller
 	 */
 	public function actionError()
 	{
+        header("content-type:text/html;charset=utf-8");
 		if($error=Yii::app()->errorHandler->error)
 		{
 			if(Yii::app()->request->isAjaxRequest)
