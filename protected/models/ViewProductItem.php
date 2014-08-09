@@ -1,30 +1,27 @@
 <?php
 
 /**
- * This is the model class for table "tbl_product_item".
+ * This is the model class for table "view_product_item".
  *
- * The followings are the available columns in table 'tbl_product_item':
+ * The followings are the available columns in table 'view_product_item':
  * @property string $item_id
- * @property string $product_id
+ * @property string $name
+ * @property double $price
+ * @property double $sell
  * @property integer $number
  * @property string $color
  * @property string $size
  * @property integer $add_time
- * @property string $enable
  * @property string $create_time
- *
- * The followings are the available model relations:
- * @property TblProductAdd[] $tblProductAdds
- * @property TblProduct $product
  */
-class TblProductItem extends CActiveRecord
+class ViewProductItem extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'tbl_product_item';
+		return 'view_product_item';
 	}
 
 	/**
@@ -35,15 +32,16 @@ class TblProductItem extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('product_id, number, color, size, create_time', 'required'),
+			array('number, color, size, create_time', 'required'),
 			array('number, add_time', 'numerical', 'integerOnly'=>true),
-			array('product_id, create_time', 'length', 'max'=>10),
+			array('price, sell', 'numerical'),
+			array('item_id, create_time', 'length', 'max'=>10),
+			array('name', 'length', 'max'=>80),
 			array('color', 'length', 'max'=>6),
 			array('size', 'length', 'max'=>4),
-			array('enable', 'length', 'max'=>1),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('item_id, product_id, number, color, size, add_time, enable, create_time', 'safe', 'on'=>'search'),
+			array('item_id, name, price, sell, number, color, size, add_time, create_time', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,8 +53,6 @@ class TblProductItem extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'tblProductAdds' => array(self::HAS_MANY, 'TblProductAdd', 'item_id'),
-			'product' => array(self::BELONGS_TO, 'TblProduct', 'product_id'),
 		);
 	}
 
@@ -67,12 +63,13 @@ class TblProductItem extends CActiveRecord
 	{
 		return array(
 			'item_id' => '产品id',
-			'product_id' => '产品id',
+			'name' => '产品名称',
+			'price' => '进货价',
+			'sell' => '销售价格',
 			'number' => '数量',
 			'color' => '单品颜色',
 			'size' => '码数',
 			'add_time' => '补货次数',
-			'enable' => '是否生效',
 			'create_time' => '创建时间',
 		);
 	}
@@ -96,12 +93,13 @@ class TblProductItem extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('item_id',$this->item_id,true);
-		$criteria->compare('product_id',$this->product_id,true);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('price',$this->price);
+		$criteria->compare('sell',$this->sell);
 		$criteria->compare('number',$this->number);
 		$criteria->compare('color',$this->color,true);
 		$criteria->compare('size',$this->size,true);
 		$criteria->compare('add_time',$this->add_time);
-		$criteria->compare('enable',$this->enable,true);
 		$criteria->compare('create_time',$this->create_time,true);
 
 		return new CActiveDataProvider($this, array(
@@ -113,7 +111,7 @@ class TblProductItem extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return TblProductItem the static model class
+	 * @return ViewProductItem the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

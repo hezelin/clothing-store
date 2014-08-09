@@ -1,24 +1,21 @@
 <?php
 
 /**
- * This is the model class for table "tbl_user".
+ * This is the model class for table "tbl_user_log".
  *
- * The followings are the available columns in table 'tbl_user':
+ * The followings are the available columns in table 'tbl_user_log':
+ * @property integer $id
  * @property string $uid
- * @property string $name
- * @property string $password
- * @property string $salt
- * @property string $roles
+ * @property string $log
  * @property string $create_time
  */
-class TblUser extends CActiveRecord
+class TblUserLog extends CActiveRecord
 {
-	/**
-	 * @return string the associated database table name
-	 */
+
+    public $create_time;
 	public function tableName()
 	{
-		return 'tbl_user';
+		return 'tbl_user_log';
 	}
 
 	/**
@@ -29,21 +26,16 @@ class TblUser extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, password, salt', 'required'),
-			array('name', 'length', 'max'=>30),
-            array('name','unique','on'=>'add'),
-			array('password', 'length', 'max'=>32),
-			array('salt', 'length', 'max'=>8),
-			array('roles', 'length', 'max'=>7),
+			array('uid, log', 'required'),
+			array('uid', 'length', 'max'=>11),
+			array('log', 'length', 'max'=>255),
+			array('create_time', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('uid, name, password, salt, roles, create_time', 'safe', 'on'=>'search'),
+			array('id, uid, log, create_time', 'safe', 'on'=>'search'),
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
 	public function relations()
 	{
 		// NOTE: you may need to adjust the relation name and the related
@@ -58,12 +50,10 @@ class TblUser extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
+			'id' => '日志id',
 			'uid' => '用户id',
-			'name' => '用户名',
-			'password' => '密码',
-			'salt' => '加密盐',
-			'roles' => '角色',
-			'create_time' => '创建时间',
+			'log' => '操作记录',
+			'create_time' => '操作时间',
 		);
 	}
 
@@ -85,11 +75,9 @@ class TblUser extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
+		$criteria->compare('id',$this->id);
 		$criteria->compare('uid',$this->uid,true);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('password',$this->password,true);
-		$criteria->compare('salt',$this->salt,true);
-		$criteria->compare('roles',$this->roles,true);
+		$criteria->compare('log',$this->log,true);
 		$criteria->compare('create_time',$this->create_time,true);
 
 		return new CActiveDataProvider($this, array(
@@ -97,14 +85,12 @@ class TblUser extends CActiveRecord
 		));
 	}
 
-	/**
-	 * Returns the static model of the specified AR class.
-	 * Please note that you should have this exact method in all your CActiveRecord descendants!
-	 * @param string $className active record class name.
-	 * @return TblUser the static model class
-	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
+
+    public function init(){
+        $this->create_time = time();
+    }
 }

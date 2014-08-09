@@ -15,16 +15,24 @@
             'header'=>'操作',
             'class'=>'booster.widgets.TbButtonColumn',
             'template'=>'{update} {delete}',
+
             'updateButtonUrl'=>'Yii::app()->createUrl("factory/update",array("id"=>$data->id))',
             'deleteButtonUrl'=>'Yii::app()->createUrl("factory/delete",array("id"=>$data->id))',
         )
 
     );
-    $this->widget('booster.widgets.TbGridView',array(
+
+
+    $this->widget(
+        'booster.widgets.TbExtendedGridView',
+        array(
+            'fixedHeader' => true,
+            'headerOffset' => 40,
+            // 40px is the height of the main navigation at bootstrap
             'type' => 'striped',
-            'dataProvider' => $model->search(),
+            'dataProvider' => $dataProvider,
+            'responsiveTable' => true,
             'template' => "{summary}\n{items}\n{pager}",
-            'filter' => $model,
             'columns' => $gridColumns,
         )
     );

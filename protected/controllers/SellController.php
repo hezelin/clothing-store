@@ -45,10 +45,6 @@ class SellController extends Controller
 		);
 	}*/
 
-	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
 	public function actionView($id)
 	{
 		$this->render('view',array(
@@ -56,10 +52,6 @@ class SellController extends Controller
 		));
 	}
 
-	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
-	 */
 	public function actionCreate()
 	{
 		$model=new TblSell;
@@ -79,11 +71,6 @@ class SellController extends Controller
 		));
 	}
 
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
@@ -103,11 +90,6 @@ class SellController extends Controller
 		));
 	}
 
-	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
-	 */
 	public function actionDelete($id)
 	{
 		$this->loadModel($id)->delete();
@@ -117,9 +99,6 @@ class SellController extends Controller
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	/**
-	 * Lists all models.
-	 */
 	public function actionIndex()
 	{
 		$dataProvider=new CActiveDataProvider('TblSell');
@@ -128,9 +107,6 @@ class SellController extends Controller
 		));
 	}
 
-	/**
-	 * Manages all models.
-	 */
 	public function actionAdmin()
 	{
 		$model=new TblSell('search');
@@ -143,13 +119,6 @@ class SellController extends Controller
 		));
 	}
 
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer $id the ID of the model to be loaded
-	 * @return TblSell the loaded model
-	 * @throws CHttpException
-	 */
 	public function loadModel($id)
 	{
 		$model=TblSell::model()->findByPk($id);
@@ -158,19 +127,14 @@ class SellController extends Controller
 		return $model;
 	}
 
-
     public function actionSelect()
     {
-        /*$dataProvider=new CActiveDataProvider('TblProduct');
-        $model = new TblProduct;
-        $this->render('select',array('dataProvider'=>$dataProvider,'model'=>$model));*/
-
         $model=new TblProduct('search');
         $model->unsetAttributes();
         if(isset($_GET['TblProduct'])){
             $model->attributes=$_GET['TblProduct'];
         }
-        $this->render('select',array('model'=>$model));
+        $this->render('select',array('model'=>$model,'type'=>$_GET['type']));
 
     }
 
@@ -241,6 +205,77 @@ class SellController extends Controller
         $this->render('wholesale',array('item'=>$item,'model'=>$model,'product'=>$product));
     }
 
+    public function actionReturn($id)
+    {
+        if(isset($_POST['TblSell']))
+        {   //入库操作
+            $sell_type = $_POST['TblSell']['sell_type'] == 'wholesale'? 'wholesale':'retail';
+            $sql = "insert into tbl_product_return (`item_id`,`number`,`price`,`create_time`) values ";
+            $time=time();
+            $data = '';
+
+            $sql2 = "update tbl_product_item set number = case item_id  ";
+            $data2 = '';
+            $ids = array();
+            $itemCount = 0;
+            foreach($_POST['TblSell']['item'] as $id=>$row){
+                if( $row['number'] && $row['sell'] ){
+                    $data .= "('{$id}','{$row['number']}','{$row['sell']}','{$time}'),";
+                    $data2 .= "when {$id} then number+{$row['number']} ";
+                    $ids[] = $id;
+                    $itemCount += $row['number'];
+                }
+            }
+
+            if( empty($data) ) throw new CHttpException(600,'请填写数据');
+//            拼接销售表 sql
+            $sql .= substr($data,0,-1).';';
+//            拼接 单品表更新数量 sql 与 补货次数
+            $sql2 .= $data2.'end where item_id in ('.implode(',',$ids).');';
+
+            $transaction=Yii::app()->db->beginTransaction();
+            try{
+                if( ! Yii::app()->db->createCommand($sql)->execute() ) throw new Exception('tbl_product_return 错误');
+                if( ! Yii::app()->db->createCommand($sql2)->execute() ) throw new Exception('tbl_product_item 错误');
+                $transaction->commit();
+
+                $this->userLog(Yii::app()->user->id,'次品录入 '.$itemCount.' 件');
+            }catch (Exception $e){
+                $transaction->rollBack();
+                throw new CHttpException(600,$e->getMessage());
+//                $this->debugArray($e);
+//                Yii::app()->end();
+            }
+
+            // 插入数据成功，待 跳转
+            print_r($_POST['TblSell']);
+        }
+
+        $model = new TblSell;
+        $product = Yii::app()->db->createCommand()
+            ->select('name')
+            ->from('tbl_product')
+            ->where('enable="Y" and product_id=:product_id',array(':product_id'=>$id))
+            ->queryScalar();
+
+        $itemData = Yii::app()->db->createCommand()
+            ->select('item_id,color,size,number')
+            ->from('tbl_product_item')
+            ->where('number>0 and enable="Y" and product_id=:product_id',array(':product_id'=>$id))
+            ->queryAll();
+        $item = array();
+        foreach($itemData as $r){
+            $item[$r['color']]['name'] = $this->colorList()[$r['color']];
+            $item[$r['color']]['data'][] = array(
+                'item_id'=>$r['item_id'],
+                'size'=>$r['size'],
+                'number'=>$r['number'],
+            );
+        }
+
+        $this->render('return',array('item'=>$item,'model'=>$model,'product'=>$product));
+    }
+
 	protected function performAjaxValidation($model)
 	{
 		if(isset($_POST['ajax']) && $_POST['ajax']==='tbl-sell-form')
@@ -249,6 +284,14 @@ class SellController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    public function userLog($uid,$msg)
+    {
+        $model = new TblUserLog;
+        $model->uid = $uid;
+        $model->log = $msg;
+        $model->save();
+    }
 
     private function colorList()
     {
